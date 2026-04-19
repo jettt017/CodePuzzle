@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tentang - 24-Puzzle Solver </title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #16161f;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --accent: #c8ff4e;
+  --text: #f0ede6;
+  --text2: #9b9aa6;
+  --text3: #5a5968;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(200,255,78,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,255,78,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,15,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { color: var(--text3); text-decoration: none; font-size: 13px; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); }
+main { max-width: 1300px; margin: 0 auto; padding: 56px 32px 80px; }
+.section-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.section-title { font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 300; margin-bottom: 16px; }
+.section-lead { font-size: 15px; color: var(--text2); max-width: 700px; line-height: 1.8; margin-bottom: 36px; }
+.about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+.panel p { color: var(--text2); line-height: 1.8; font-size: 14px; margin-bottom: 12px; }
+.panel strong { color: var(--text); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.stat-num { font-family: 'Fraunces', serif; font-size: 28px; color: var(--accent); line-height: 1; }
+.stat-label { margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+.ref-title { margin-top: 20px; margin-bottom: 10px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+.ref-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ref-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; font-size: 12px; color: var(--text2); line-height: 1.6; }
+footer { border-top: 1px solid var(--border); background: var(--surface); padding: 28px 32px; }
+.footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.footer-inner p { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+@media (max-width: 980px) { .about-grid { grid-template-columns: 1fr; } .ref-list { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { nav { padding: 0 16px; } main { padding: 30px 16px 56px; } .stats { grid-template-columns: 1fr 1fr; } .footer-inner { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">24-Puzzle Solver · Kelompok 4 </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/algorithm">Algoritma</a></li>
+    <li><a href="/about" class="active">Tentang</a></li>
+    <li><a href="/contact">Kontak</a></li>
+  </ul>
+</nav>
+
+<main>
+  <p class="section-eyebrow">Tentang Proyek</p>
+  <h1 class="section-title">Final Project Kecerdasan Buatan</h1>
+  <p class="section-lead">Halaman ini menjelaskan konteks proyek, ruang keadaan 24-puzzle, pendekatan solusi dengan A*, dan ringkasan stack teknologi yang dipakai.</p>
+
+  <div class="about-grid">
+    <div class="panel">
+      <p><strong>24-Puzzle</strong> adalah puzzle 5x5 dengan 24 ubin bernomor dan 1 kotak kosong. Tujuan utama adalah menyusun ubin dari 1 sampai 24 secara berurutan.</p>
+      <p>Ruang keadaan sangat besar, sehingga pencarian brute-force tidak praktis. Karena itu proyek menggunakan <strong>A* Search dengan heuristik H1</strong> untuk menjaga solusi tetap optimal sekaligus lebih efisien.</p>
+      <p>Backend dibangun dengan Python + Flask, sedangkan frontend menggunakan HTML, CSS, dan Vanilla JavaScript untuk visualisasi langkah-langkah solusi.</p>
+
+      <div class="ref-title">Daftar Pustaka Ringkas</div>
+      <div class="ref-list">
+        <div class="ref-item">Nilsson, Principles of Artificial Intelligence.</div>
+        <div class="ref-item">Russell & Norvig, AI: A Modern Approach.</div>
+        <div class="ref-item">Wikipedia: A* search algorithm.</div>
+        <div class="ref-item">Wikipedia: 15 puzzle / n-puzzle.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="stats">
+        <div class="stat"><div class="stat-num">25!/2</div><div class="stat-label">Ruang keadaan</div></div>
+        <div class="stat"><div class="stat-num">4</div><div class="stat-label">Max branching factor</div></div>
+        <div class="stat"><div class="stat-num">H1</div><div class="stat-label">Misplaced tiles</div></div>
+        <div class="stat"><div class="stat-num">O(b^d)</div><div class="stat-label">Worst-case A*</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 24-Puzzle Solver</p>
+    <p>Final Project AI</p>
+  </div>
+</footer>
+</body>
+</html>

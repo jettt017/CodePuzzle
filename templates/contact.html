@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kontak - 24-Puzzle Solver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #16161f;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --accent: #c8ff4e;
+  --text: #f0ede6;
+  --text2: #9b9aa6;
+  --text3: #5a5968;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(200,255,78,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,255,78,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,15,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { color: var(--text3); text-decoration: none; font-size: 13px; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); }
+main { max-width: 1300px; margin: 0 auto; padding: 56px 32px 80px; }
+.section-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.section-title { font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 300; margin-bottom: 16px; }
+.section-lead { font-size: 15px; color: var(--text2); max-width: 720px; line-height: 1.8; margin-bottom: 36px; }
+.contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.contact-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; text-decoration: none; display: block; transition: border-color 0.2s; }
+.contact-card:hover { border-color: var(--border2); }
+.contact-icon { font-family: 'DM Mono', monospace; font-size: 20px; color: var(--text3); margin-bottom: 12px; }
+.contact-card h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; color: var(--text); margin-bottom: 6px; }
+.contact-card p { font-size: 12px; color: var(--text3); line-height: 1.7; margin-bottom: 12px; }
+.contact-val { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); }
+
+.team-section { margin-top: 22px; }
+.team-title { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 300; margin-bottom: 12px; }
+.team-sub { font-size: 13px; color: var(--text3); margin-bottom: 14px; }
+.team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; }
+.team-role { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.team-name { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; color: var(--text); margin-bottom: 4px; }
+.team-id { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); }
+
+.run-card { margin-top: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.run-card p { color: var(--text2); font-size: 13px; }
+.run-cmd { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; line-height: 1.7; }
+footer { border-top: 1px solid var(--border); background: var(--surface); padding: 28px 32px; }
+.footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.footer-inner p { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+@media (max-width: 980px) { .contact-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { nav { padding: 0 16px; } main { padding: 30px 16px 56px; } .contact-grid { grid-template-columns: 1fr; } .team-grid { grid-template-columns: 1fr; } .footer-inner { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">24-Puzzle Solver · Kelompok 4 </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/algorithm">Algoritma</a></li>
+    <li><a href="/about">Tentang</a></li>
+    <li><a href="/contact" class="active">Kontak</a></li>
+  </ul>
+</nav>
+
+<main>
+  <p class="section-eyebrow">Kontak dan Tautan</p>
+  <h1 class="section-title">Hubungi Kami</h1>
+  <p class="section-lead">Halaman ini memisahkan semua info komunikasi dan dokumentasi agar tidak bercampur dengan halaman solver.</p>
+
+  <div class="contact-grid">
+    <a class="contact-card" href="mailto:gamely017@gmail.com">
+      <div class="contact-icon">@</div>
+      <h3>Email</h3>
+      <p>Kirim pertanyaan atau masukan terkait implementasi algoritma.</p>
+      <div class="contact-val">gamely017@gmail.com</div>
+    </a>
+    <a class="contact-card" href="https://github.com" target="_blank">
+      <div class="contact-icon">&lt;/&gt;</div>
+      <h3>GitHub</h3>
+      <p>Repository source code proyek dan eksperimen puzzle solver.</p>
+      <div class="contact-val">github.com</div>
+    </a>
+    <div class="contact-card">
+      <div class="contact-icon">#</div>
+      <h3>Dokumentasi</h3>
+      <p>Laporan final dan detail implementasi tersedia untuk kebutuhan akademik.</p>
+      <div class="contact-val">Final Project 2026</div>
+    </div>
+  </div>
+
+  <section class="team-section">
+    <h2 class="team-title">Anggota Kelompok</h2>
+    <p class="team-sub">Silakan ganti data berikut sesuai nama dan NIM anggota kelompok kamu.</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-role">Ketua</div>
+        <div class="team-name">Gani Abi Saputra Van Sigu</div>
+        <div class="team-id">NPM: 24081010033</div>
+      </div>
+      <div class="team-card">
+        <div class="team-role">Anggota 1</div>
+        <div class="team-name">Sendy Luis Armando</div>
+        <div class="team-id">NPM: 24081010102</div>
+      </div>
+      <div class="team-card">
+        <div class="team-role">Anggota 2</div>
+        <div class="team-name">Ratna Yuliana Triyono</div>
+        <div class="team-id">NPM: 24081010052</div>
+      </div>
+      <div class="team-card">
+        <div class="team-role">Anggota 3</div>
+        <div class="team-name">Natasya Jollyn Karisya Agustin</div>
+        <div class="team-id">NPM: 24081010181</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="run-card">
+    <div>
+      <p>Cara menjalankan server lokal</p>
+      <p style="font-size:11px; color:var(--text3); margin-top:4px;">Install dependency lalu jalankan Flask app.</p>
+    </div>
+    <div class="run-cmd">pip install -r requirements.txt<br>python app.py</div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 24-Puzzle Solver</p>
+    <p>Contact Page</p>
+  </div>
+</footer>
+</body>
+</html>

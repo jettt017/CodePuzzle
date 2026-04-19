@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algoritma - 24-Puzzle Solver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #16161f;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --accent: #c8ff4e;
+  --accent3: #ff6b6b;
+  --text: #f0ede6;
+  --text2: #9b9aa6;
+  --text3: #5a5968;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(200,255,78,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,255,78,0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { color: var(--text3); text-decoration: none; font-size: 13px; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); }
+main { max-width: 1300px; margin: 0 auto; padding: 56px 32px 80px; }
+.section-eyebrow { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.section-title { font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 300; margin-bottom: 16px; }
+.section-lead { font-size: 15px; color: var(--text2); max-width: 680px; line-height: 1.8; margin-bottom: 36px; }
+.algo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+.algo-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+.algo-card-icon { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1.2px; margin-bottom: 10px; text-transform: uppercase; }
+.algo-card h3 { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 300; margin-bottom: 8px; }
+.algo-card p { font-size: 13px; color: var(--text2); line-height: 1.8; }
+.formula { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--accent); background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 10px 0; display: inline-block; }
+.pseudocode { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); line-height: 1.9; overflow-x: auto; margin-top: 10px; }
+.perf-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.perf-table-head { padding: 18px 22px; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.2px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 14px 22px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); border-bottom: 1px solid var(--border); }
+td { padding: 14px 22px; color: var(--text2); border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+td:first-child { color: var(--text); }
+.good { color: var(--accent); font-family: 'DM Mono', monospace; }
+.bad { color: var(--accent3); font-family: 'DM Mono', monospace; }
+footer { border-top: 1px solid var(--border); background: var(--surface); padding: 28px 32px; }
+.footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.footer-inner p { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+@media (max-width: 900px) { .algo-grid { grid-template-columns: 1fr; } .nav-links { gap: 16px; } }
+@media (max-width: 640px) { nav { padding: 0 16px; } main { padding: 30px 16px 56px; } .footer-inner { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">24-Puzzle Solver · Kelompok 4 </div>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/algorithm" class="active">Algoritma</a></li>
+    <li><a href="/about">Tentang</a></li>
+    <li><a href="/contact">Kontak</a></li>
+  </ul>
+</nav>
+
+<main>
+  <p class="section-eyebrow">Dasar Teori</p>
+  <h1 class="section-title">Algoritma A* &amp; Heuristik H1</h1>
+  <p class="section-lead">Halaman ini khusus membahas konsep A* Search yang dipakai oleh solver, termasuk fungsi evaluasi, heuristik H1, pseudocode, dan ringkasan performa.</p>
+
+  <div class="algo-grid">
+    <div class="algo-card">
+      <div class="algo-card-icon">01 - Fungsi Evaluasi</div>
+      <h3>f(n) = g(n) + h(n)</h3>
+      <div class="formula">f(n) = g(n) + h(n)</div>
+      <p>g(n) adalah biaya jalur aktual dari state awal ke n, sedangkan h(n) adalah estimasi biaya ke goal. Node dengan nilai f paling kecil diprioritaskan untuk diekspansi.</p>
+    </div>
+    <div class="algo-card">
+      <div class="algo-card-icon">02 - Heuristik H1</div>
+      <h3>Misplaced Tiles</h3>
+      <div class="formula">h1(s) = jumlah ubin salah posisi</div>
+      <p>H1 menghitung berapa ubin yang belum berada pada posisi goal, tidak termasuk blank (0). Heuristik ini admissible dan konsisten.</p>
+    </div>
+    <div class="algo-card">
+      <div class="algo-card-icon">03 - Pseudocode</div>
+      <h3>A* Ringkas</h3>
+      <div class="pseudocode">A_Star(start, goal):<br>openSet <- priority queue<br>while openSet not empty:<br>&nbsp;&nbsp;current <- pop f terkecil<br>&nbsp;&nbsp;if current == goal: return path<br>&nbsp;&nbsp;for each neighbor:<br>&nbsp;&nbsp;&nbsp;&nbsp;update g, f, cameFrom<br>return None</div>
+    </div>
+    <div class="algo-card">
+      <div class="algo-card-icon">04 - Kompleksitas</div>
+      <h3>Analisis</h3>
+      <p>Kasus terburuk A* berada pada orde O(b^d). Namun dengan heuristik yang baik, jumlah eksplorasi node turun drastis dibanding uniform-cost search.</p>
+    </div>
+  </div>
+
+  <div class="perf-table-wrap">
+    <div class="perf-table-head">Perbandingan A* (H1) vs Uniform-Cost</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Kasus</th>
+          <th>Biaya Optimal</th>
+          <th>A* H1 Nodes</th>
+          <th>A* H1 Waktu</th>
+          <th>Uniform-Cost Nodes</th>
+          <th>Uniform-Cost Waktu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Mudah</td><td>2</td><td class="good">2</td><td class="good">0.09 ms</td><td class="bad">9</td><td>0.17 ms</td></tr>
+        <tr><td>Sedang</td><td>10</td><td class="good">30</td><td class="good">0.69 ms</td><td class="bad">9,996</td><td class="bad">229 ms</td></tr>
+        <tr><td>Sulit</td><td>16</td><td class="good">272</td><td class="good">5.3 ms</td><td class="bad">-</td><td class="bad">Tidak selesai</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>© 2026 24-Puzzle Solver</p>
+    <p>A* · H1 · Flask</p>
+  </div>
+</footer>
+</body>
+</html>
